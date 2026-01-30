@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-function useSorting(initial={name:'',value:""}) {
+const useSorting=(initial={name:'',value:""})=> {
 
   const [sorting,setSorting]  =useState(initial)
 

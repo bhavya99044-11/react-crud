@@ -1,18 +1,40 @@
-import React from 'react'
+import React from "react";
+import { IoCreate } from "react-icons/io5";
 
-function Button({onClick,isLoading,text,color,disable=false}) {
-  console.log(isLoading)
+function Button({
+  onClick,
+  isLoading,
+  text,
+  color,
+  disable = false,
+  icon = null,
+}) {
   return (
-    <button disabled={isLoading || disable} type="submit" className='cursor-pointer' onClick={onClick}>
-     <div
-      style={{
-        opacity:disable?'70%':""
-      }}
-     className={` px-4 py-2 bg-${color}-600 text-white flex items-center justify-center gap-2 rounded ${disable||isLoading?`cursor-not-allowed`:`hover:bg-${color}-700`} `}>
-       {isLoading?<div className='loader'></div>:''} {text}
-     </div>
+    <button
+      disabled={isLoading || disable}
+      type="submit"
+      className="cursor-pointer"
+      onClick={onClick}
+    >
+      <div
+        style={{
+          backgroundColor:color,
+          opacity: disable ? "70%" : "",
+        }}
+        className={` px-4 py-2  text-white flex items-center justify-center gap-2 rounded ${
+          disable || isLoading ? `cursor-not-allowed` : `hover:bg-${color}-700`
+        } `}
+      >
+        {isLoading ? <div className="loader"></div> : ""}
+        {icon && (
+          <span className="mr-1 ml-1 mt-[1px] text-xl">
+            <IoCreate />
+          </span>
+        )}
+        <span className={`${icon ?'hidden sm:block':""}`}>{text}</span>
+      </div>
     </button>
-  )
+  );
 }
 
-export default Button
+export default Button;

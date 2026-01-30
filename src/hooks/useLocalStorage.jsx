@@ -1,6 +1,6 @@
 import React from 'react'
 
-function useLocalStorage(key) {
+const useLocalStorage=(key)=> {
 
     const storeInLocal =(value)=> {localStorage.setItem(key,JSON.stringify(value))}
 

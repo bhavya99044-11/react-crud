@@ -1,45 +1,42 @@
-import React, { useEffect, useState } from "react";
 import { IoCreate } from "react-icons/io5";
-import CreateModal from "../components/product/CreateModal";
-import ViewModal from "../components/product/ViewModal";
-import DeleteModal from "../components/product/DeleteModal";
-import UpdateModal from "../components/product/UpdateModal";
-import backgroundImage from "../../public/background.jpeg";
-import Pagination from "../components/common/Pagination";
-import Table from "../components/product/Table";
+import React, { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import TableHead from "../components/common/TableHead";
+import Api from "../services/apiRequest";
 import useSorting from "../hooks/useSorting";
-import { headersArray } from "../constants/productTableHeaders";
-import Api from "../utils/Api";
-import validateParams from "../validation/Params";
+import Table from "../components/common/Table";
+import Button from "../components/common/Button";
+import { Loading } from "../components/common/Loading";
+import Pagination from "../components/common/Pagination";
+import backgroundImage from "../../public/background.jpeg";
+import DeleteModal from "../components/product/DeleteModal";
+import ProductModal from "../components/product/ProductModal";
+import { paramValidation } from "../validation/paramValidation";
+import { headersArray } from "../utils/constants/productTableHeaders";
+import { createApi, deleteApi, getApi, updateApi } from "../services/apiService";
 
 function Products() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const [data,setData]=useState([]);
   const [updateData, setUpdateData] = useState({});
+  const [loading,setLoading]=useState(false);
   const [viewData, setViewData] = useState({});
-  const [pagination,setPagination]=useState({
-    'skip':searchParams.get("skip") != null ? searchParams.get("skip") : 0,
-    "limit":searchParams.get("limit") != null ? searchParams.get("limit") : 20,
-    "currentPage":searchParams.get("page") != null ? searchParams.get("page") : 1
-  })
-  const {loading,data,error,setError,apiRequest}= Api();
-  const {sorting, handleSorting} = useSorting();
-
-  const initialModal = {
+  const [pagination, setPagination] = useState({
+    skip: searchParams.get("skip") != null ? searchParams.get("skip") : 0,
+    limit: searchParams.get("limit") != null ? searchParams.get("limit") : 20,
+    currentPage:
+      searchParams.get("page") != null ? searchParams.get("page") : 1,
+  });
+  const { error, setError, apiRequest } = Api();
+  const { sorting, handleSorting } = useSorting();
+  const [isModal, setIsModal] = useState({
     isCreate: false,
     isView: false,
     isDelete: false,
     isUpdate: false,
-  };
-  const [isModal, setIsModal] = useState(initialModal);
+  });
 
-  const initalIds = {
-    deleteId: null,
-    updateId: null,
-  };
-  const [modalId, setModalId] = useState(initalIds);
+  const [modalId, setModalId] = useState({ deleteId: null, updateId: null });
 
   function changeModalIds(name, id) {
     setModalId((prev) => ({
@@ -48,19 +45,23 @@ function Products() {
     }));
   }
 
-  async function fetchData() {   
-    const paramsValidation= validateParams(searchParams) 
-    if(paramsValidation){
-     setError('Invalid params used');
-     return;
-    }    
-    const sortingQuery = sorting.name != "" ? `sortBy=${sorting.name}&order=${sorting.value}` : "";
-    navigate(`/products?limit=${pagination.limit}&skip=${pagination.skip}&page=${pagination.currentPage}&${sortingQuery}`);
+  async function fetchData() {
+    setLoading(true);
+    const paramsValidation = paramValidation(searchParams);
+    if (paramsValidation) {
+      setError("Invalid params used");
+      return;
+    }
+    const sortingQuery =
+      sorting.name != "" ? `sortBy=${sorting.name}&order=${sorting.value}` : "";
+    navigate(`/products?limit=${pagination.limit}&skip=${pagination.skip}&page=${pagination.currentPage}&${sortingQuery}` );
     try{
-      await apiRequest(`https://dummyjson.com/products?limit=${pagination.limit}&skip=${pagination.skip}&${sortingQuery}`,'Get',null,null);
+      const response=await getApi(`products?limit=${pagination.limit}&skip=${pagination.skip}&${sortingQuery}`);
+      setData(response);
     }catch(e){
       console.log(e)
     }
+    setLoading(false)
   }
 
   useEffect(() => {
@@ -68,34 +69,22 @@ function Products() {
   }, [pagination, sorting]);
 
   async function viewProduct(id) {
-    try{
-      setViewData({})
-      changeModalStatus('isView')      
-      const data = await apiRequest(`https://dummyjson.com/products/${id}`, 'Get',null,true);
-      setViewData(data)
-    }catch(e){
-      console.log(e)
-    }
+    setViewData({});
+    changeModalStatus("isView");
+    const response = await getApi(`products/${id}`);
+    setViewData(response);
   }
 
   const createProduct = async (formData) => {
-    try{
-      await apiRequest("https://dummyjson.com/products/add",'Post',formData,null)
-      fetchData();
-      changeModalStatus("isCreate");
-    }catch(e){
-      console.log(e)
-    }
+    await createApi("products/add",formData,);
+    fetchData();
+    changeModalStatus("isCreate");
   };
 
   async function storeUpdateForm(e, data) {
     e.preventDefault();
-    try{
-     await apiRequest(`https://dummyjson.com/products/${modalId.updateId}`,'Put',data)
-     fetchData();
-    }catch(e){
-      console.log(e)
-    }
+    await updateApi(`products/${modalId.updateId}`,data);
+    fetchData();
     changeModalStatus("isUpdate");
     return true;
   }
@@ -108,25 +97,18 @@ function Products() {
   }
 
   async function openUpdateModal(id) {
-    setUpdateData({})
+    setUpdateData({});
     changeModalStatus("isUpdate");
-    try{
-      const response = await apiRequest(`https://dummyjson.com/products/${id}`,'Get',null,true);
-      changeModalIds("updateId", id);
-      setUpdateData(response);      
-    }catch(e){
-      console.log(e)
-    }
-    }
+    const response=await getApi(`products/${id}`);
+    console.log(response)
+    changeModalIds("updateId", id);
+    setUpdateData(response);
+  }
 
   async function deleteProduct() {
-    try{
-      await apiRequest(`https://dummyjson.com/products/${modalId.deleteId}`,'Delete',null,true)
-      changeModalStatus("isDelete");
-      fetchData();
-    }catch(e){
-      console.log(e)
-    }
+    await deleteApi( `products/${modalId.deleteId}`,);
+    changeModalStatus("isDelete");
+    fetchData();
   }
 
   async function deleteModal(id) {
@@ -135,67 +117,100 @@ function Products() {
   }
 
   function changePage(i) {
-    setPagination((prev)=>({
+    setPagination((prev) => ({
       ...prev,
-      'skip':pagination.limit* (i - 1),
-      'currentPage':i
-    }))
+      skip: pagination.limit * (i - 1),
+      currentPage: i,
+    }));
   }
 
   function changeLimit(i) {
-    setPagination(()=>({
-      'limit':i,
-      'skip':0,
-      'currentPage':1
-    }))
+    setPagination(() => ({
+      limit: i,
+      skip: 0,
+      currentPage: 1,
+    }));
   }
+
+  
   return (
     <>
-      <div className={`bg-[url('${backgroundImage}')] bg-no-repeat bg-cover h-[100vh]  p-3 sm:p-6 md:p-10`}>
+      <div style={{
+        backgroundImage: `url(${backgroundImage})`
+      }} className={` bg-no-repeat bg-cover h-[100vh] p-3 sm:p-6 md:p-10`}>
         <div className="border-8 border-white/30 rounded-[25px]">
           <div className="rounded-[17px] border-gray-300 border-2">
             <div className="flex items-center  justify-between bg-white rounded-t-[15px] p-3 ">
-              <h2 className="text-lg sm:text-xl md:text-2xl font-bold">Products</h2>
-              <button title="Create"
+              <h2 className="text-lg sm:text-xl md:text-2xl font-bold">
+                Products
+              </h2>
+              <Button
+                text="Create"
+                color="blue"
+                icon={<IoCreate />}
                 onClick={() => changeModalStatus("isCreate")}
-                className="px-2 flex py-2 font-semibold text-white bg-blue-600 rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 cursor-pointer"
-              >
-                <span className="mr-1 ml-1 mt-[1px] text-xl">
-                  <IoCreate />
-                </span>
-                <span className="hidden sm:block">Create </span>
-              </button>
+              />
             </div>
             <div className="">
               <div className="sm:max-h-[77vh] max-h-[69vh] hide-scrollbar  overflow-x-auto overflow-y-auto">
-                {loading && (
-                  <div className="absolute  inset-0 z-50 bg-white/70 flex items-center justify-center">
-                    <div className="website-loader"></div>
-                  </div>
-                )}
-                <table className="w-full bg-white ">
-                  <TableHead headersArray={headersArray} sorting={sorting} handleSorting={handleSorting}/>
-                  {
-                    error?<tbody><tr><th colSpan={5}>{error}</th></tr></tbody>:
-                    <tbody className="">
-                    <Table data={data} viewProduct={viewProduct} openUpdateModal={openUpdateModal} deleteModal={deleteModal}/>
-                    </tbody>
-                  }
-                </table>
+                {loading && <Loading />}
+                <Table
+                  headersArray={headersArray}
+                  sorting={sorting}
+                  handleSorting={handleSorting}
+                  error={error}
+                  data={data}
+                  viewProduct={viewProduct}
+                  openUpdateModal={openUpdateModal}
+                  deleteModal={deleteModal}
+                />
               </div>
               <div className="sticky bottom-0   p-2 px-4 border-t-2 border-gray-300 bg-white rounded-b-[18px]">
                 {data?.products?.length > 0 ? (
-                  <Pagination changeLimit={changeLimit} pagination={pagination} changePage={changePage} pageRecord={data?.products?.length} total={data.total}/>
-                ) : ""}
+                  <Pagination
+                    changeLimit={changeLimit}
+                    pagination={pagination}
+                    changePage={changePage}
+                    pageRecord={data?.products?.length}
+                    total={data.total}
+                  />
+                ) : (
+                  ""
+                )}
               </div>
             </div>
           </div>
         </div>
       </div>
-      <CreateModal  isCreate={isModal.isCreate} setIsCreate={changeModalStatus} createProduct={createProduct} />
-      <ViewModal isView={isModal.isView} setIsView={changeModalStatus} viewData={viewData} />
-      <UpdateModal isUpdate={isModal.isUpdate} storeUpdateForm={storeUpdateForm} setIsUpdate={changeModalStatus} updateData={updateData}/>
-      <DeleteModal isDelete={isModal.isDelete} setIsDelete={changeModalStatus} deleteProduct={deleteProduct}/>
+      <ProductModal
+        type="isCreate"
+        title="Create Product"
+        isModal={isModal.isCreate}
+        setIsModal={changeModalStatus}
+        submitProduct={createProduct}
+      />
+      <ProductModal
+        type="isUpdate"
+        title="Update Product"
+        isModal={isModal.isUpdate}
+        setIsModal={changeModalStatus}
+        submitProduct={storeUpdateForm}
+        data={updateData}
+      />
+      <ProductModal
+        type="isView"
+        title="View Product"
+        isModal={isModal.isView}
+        setIsModal={changeModalStatus}
+        data={viewData}
+      />
+      <DeleteModal
+        type="isDelete"
+        title="Delete Product"
+        isDelete={isModal.isDelete}
+        setIsDelete={changeModalStatus}
+        deleteProduct={deleteProduct}
+      />
     </>
   );
 }
