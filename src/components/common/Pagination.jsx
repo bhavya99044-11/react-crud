@@ -1,6 +1,6 @@
 import React from 'react'
 import { IoMdArrowDropdown } from "react-icons/io";
-import Select from './Select';
+import {Select} from './';
 
 function Pagination({pagination,total,changePage,changeLimit}) {
 

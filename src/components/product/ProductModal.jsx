@@ -1,9 +1,7 @@
 import React, { useLayoutEffect, useState } from "react";
-import Button from "../common/Button";
-import Modal from "../common/Modal";
-import { addProductValidation } from "../../validation/addProductValidation";
-import capitalInput from "../../utils/utils";
-import { updateProductValidation } from "../../validation/updateProductValidation";
+import {Button,Modal} from "../common";
+import { addProductValidation , updateProductValidation } from "../../validation";
+import {capitalInput} from "../../utils/utils";
 
 function ProductModal({
   type,
@@ -60,6 +58,8 @@ function ProductModal({
       ...prev,
       [e.target.name]: e.target.value.trim(),
     }));
+
+    
     if (e.target.value != "") {
       setFormData((prev) => {
         const errors = updateProductValidation({
@@ -83,7 +83,7 @@ function ProductModal({
   }
 
   useLayoutEffect(() => {
-    if(type != "isCreate"){
+    if (type != "isCreate") {
       setButtonDisabled(true);
       setFormData(data);
     }
@@ -114,7 +114,6 @@ function ProductModal({
     e.preventDefault();
     setIsLoading(true);
     const errors = updateProductValidation(formData);
-    console.log(errors);
     if (Object.entries(errors).length > 0) {
       setError(errors);
       setIsLoading(false);

@@ -21,13 +21,13 @@ function Button({
           backgroundColor:color,
           opacity: disable ? "70%" : "",
         }}
-        className={` px-4 py-2  text-white flex items-center justify-center gap-2 rounded ${
-          disable || isLoading ? `cursor-not-allowed` : `hover:bg-${color}-700`
+        className={`px-4 py-2 text-white flex items-center justify-center gap-2 rounded ${
+          disable || isLoading ? 'cursor-not-allowed' : `hover:bg-${color}-700`
         } `}
       >
-        {isLoading ? <div className="loader"></div> : ""}
+        {isLoading && <div className="loader"/>}
         {icon && (
-          <span className="mr-1 ml-1 mt-[1px] text-xl">
+          <span className="mx-1 mt-[1px] text-xl">
             <IoCreate />
           </span>
         )}

@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from "react";
-import Modal from "../common/Modal";
-import Button from "../common/Button";
-import { IoMdClose } from "react-icons/io";
+import React, {  useState } from "react";
+import {Modal,Button} from "../common";
 
 const DeleteModal = ({ setIsDelete,title ,isDelete, deleteProduct }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -11,7 +9,6 @@ const DeleteModal = ({ setIsDelete,title ,isDelete, deleteProduct }) => {
     try {
       await deleteProduct();
     } catch (e) {
-      const error = "error";
       console.log(e);
     } finally {
       setIsLoading(false);
@@ -25,6 +22,7 @@ const DeleteModal = ({ setIsDelete,title ,isDelete, deleteProduct }) => {
       </p>
       <div className="flex justify-center mt-3 gap-2">
         <button
+        type="button"
           onClick={() => {
             setIsDelete("isDelete");
           }}
@@ -37,7 +35,7 @@ const DeleteModal = ({ setIsDelete,title ,isDelete, deleteProduct }) => {
           isLoading={isLoading}
           text="Delete"
           color="red"
-        ></Button>
+        />
       </div>
     </Modal>
   );

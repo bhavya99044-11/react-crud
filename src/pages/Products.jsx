@@ -1,18 +1,13 @@
-import { IoCreate } from "react-icons/io5";
 import React, { useEffect, useState } from "react";
+import { IoCreate } from "react-icons/io5";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import Api from "../services/apiRequest";
 import useSorting from "../hooks/useSorting";
-import Table from "../components/common/Table";
-import Button from "../components/common/Button";
-import { Loading } from "../components/common/Loading";
-import Pagination from "../components/common/Pagination";
-import backgroundImage from "../../public/background.jpeg";
-import DeleteModal from "../components/product/DeleteModal";
-import ProductModal from "../components/product/ProductModal";
+import {Pagination,Loading,Table,Button} from "../components/common";
+import { ProductModal,DeleteModal } from "../components/product";
 import { paramValidation } from "../validation/paramValidation";
 import { headersArray } from "../utils/constants/productTableHeaders";
 import { createApi, deleteApi, getApi, updateApi } from "../services/apiService";
+import backgroundImage from "../../public/background.jpeg";
 
 function Products() {
   const [searchParams] = useSearchParams();
@@ -27,7 +22,7 @@ function Products() {
     currentPage:
       searchParams.get("page") != null ? searchParams.get("page") : 1,
   });
-  const { error, setError, apiRequest } = Api();
+  const [ error, setError ] = useState(null);
   const { sorting, handleSorting } = useSorting();
   const [isModal, setIsModal] = useState({
     isCreate: false,
@@ -76,8 +71,7 @@ function Products() {
   }
 
   const createProduct = async (formData) => {
-    await createApi("products/add",formData,);
-    fetchData();
+    await createApi("products/add",formData);
     changeModalStatus("isCreate");
   };
 
@@ -86,7 +80,6 @@ function Products() {
     await updateApi(`products/${modalId.updateId}`,data);
     fetchData();
     changeModalStatus("isUpdate");
-    return true;
   }
 
   function changeModalStatus(name) {
@@ -100,7 +93,6 @@ function Products() {
     setUpdateData({});
     changeModalStatus("isUpdate");
     const response=await getApi(`products/${id}`);
-    console.log(response)
     changeModalIds("updateId", id);
     setUpdateData(response);
   }
@@ -137,7 +129,7 @@ function Products() {
     <>
       <div style={{
         backgroundImage: `url(${backgroundImage})`
-      }} className={` bg-no-repeat bg-cover h-[100vh] p-3 sm:p-6 md:p-10`}>
+      }} className="bg-no-repeat bg-cover h-[100vh] p-3 sm:p-6 md:p-10">
         <div className="border-8 border-white/30 rounded-[25px]">
           <div className="rounded-[17px] border-gray-300 border-2">
             <div className="flex items-center  justify-between bg-white rounded-t-[15px] p-3 ">
@@ -151,8 +143,8 @@ function Products() {
                 onClick={() => changeModalStatus("isCreate")}
               />
             </div>
-            <div className="">
-              <div className="sm:max-h-[77vh] max-h-[69vh] hide-scrollbar  overflow-x-auto overflow-y-auto">
+            <div>
+              <div className="sm:max-h-[77vh] max-h-[69vh] hide-scrollbar  overflow-auto">
                 {loading && <Loading />}
                 <Table
                   headersArray={headersArray}
@@ -165,7 +157,7 @@ function Products() {
                   deleteModal={deleteModal}
                 />
               </div>
-              <div className="sticky bottom-0   p-2 px-4 border-t-2 border-gray-300 bg-white rounded-b-[18px]">
+              <div className="sticky bottom-0 py-2 px-4 border-t-2 border-gray-300 bg-white rounded-b-[18px]">
                 {data?.products?.length > 0 ? (
                   <Pagination
                     changeLimit={changeLimit}
