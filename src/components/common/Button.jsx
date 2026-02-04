@@ -1,5 +1,6 @@
 import React from "react";
 import { IoCreate } from "react-icons/io5";
+import { cn } from "../../utils/utils";
 
 function Button({
   onClick,
@@ -31,7 +32,7 @@ function Button({
             <IoCreate />
           </span>
         )}
-        <span className={`${icon ?'hidden sm:block':""}`}>{text}</span>
+        <span className={cn(icon&&'hidden sm:block')}>{text}</span>
       </div>
     </button>
   );

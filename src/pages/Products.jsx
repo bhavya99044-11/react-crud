@@ -4,7 +4,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import useSorting from "../hooks/useSorting";
 import {Pagination,Loading,Table,Button} from "../components/common";
 import { ProductModal,DeleteModal } from "../components/product";
-import { paramValidation } from "../validation/paramValidation";
+import { paramValidation } from "../validation";
 import { headersArray } from "../utils/constants/productTableHeaders";
 import { createApi, deleteApi, getApi, updateApi } from "../services/apiService";
 import backgroundImage from "../../public/background.jpeg";
@@ -54,7 +54,7 @@ function Products() {
       const response=await getApi(`products?limit=${pagination.limit}&skip=${pagination.skip}&${sortingQuery}`);
       setData(response);
     }catch(e){
-      console.log(e)
+      console.error(e)
     }
     setLoading(false)
   }

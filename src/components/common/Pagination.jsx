@@ -1,5 +1,5 @@
 import React from 'react'
-import { IoMdArrowDropdown } from "react-icons/io";
+import { cn } from '../../utils/utils';
 import {Select} from './';
 
 function Pagination({pagination,total,changePage,changeLimit}) {
@@ -69,7 +69,8 @@ function Pagination({pagination,total,changePage,changeLimit}) {
       </div>
       <div class="">
         <nav class="flex gap-1 flex-row flex-nowrap justify-between md:justify-center items-center" aria-label="Pagination">
-            <button disabled={currentPage==startPage} onClick={()=>handlePreviousPage(currentPage)}  class={`${currentPage==startPage?'!cursor-not-allowed !bg-gray-100':''} cursor-pointer flex w-8 h-8 rounded-full bg-gray-200 justify-center items-center  text-black`}
+            <button disabled={currentPage==startPage} onClick={()=>handlePreviousPage(currentPage)} 
+             class={cn(currentPage==startPage&&'!cursor-not-allowed !bg-gray-100','cursor-pointer flex w-8 h-8 rounded-full bg-gray-200 justify-center items-center  text-black')}
                  title="Previous Page">
                 <span class="sr-only">Previous Page</span>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -77,7 +78,7 @@ function Pagination({pagination,total,changePage,changeLimit}) {
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                 </svg>
             </button>  
-            <button onClick={()=>changePage(startPage)} className={`cursor-pointer w-8 h-8  bg-white ${currentPage==1?'current-page':''}`}>
+            <button onClick={()=>changePage(startPage)} className={cn('cursor-pointer w-8 h-8  bg-white',currentPage==1&&'current-page')}>
                 {startPage}
             </button> 
             {
@@ -87,7 +88,7 @@ function Pagination({pagination,total,changePage,changeLimit}) {
             </button>  :''
             }
             {array.map((i)=>(
-                <button key={i} onClick={()=>changePage(i)} className={`${currentPage==i?'current-page':''} cursor-pointer w-8 h-8  bg-white`}>
+                <button key={i} onClick={()=>changePage(i)} className={cn(currentPage==i && 'current-page','cursor-pointer w-8 h-8  bg-white')}>
                     {i}
                 </button> 
                 ))                
@@ -98,10 +99,10 @@ function Pagination({pagination,total,changePage,changeLimit}) {
                 </button> 
                 :''
             }
-            <button onClick={()=>changePage(endPage)} className={`w-8 h-8 cursor-pointer  bg-white ${currentPage==pages?'current-page':''} `}>
+            <button onClick={()=>changePage(endPage)} className={cn('w-8 h-8 cursor-pointer  bg-white',currentPage==pages && 'current-page')}>
                 {endPage}
             </button>         
-            <button disabled={currentPage==pages} onClick={()=>handleNextPage(currentPage)} class={`${currentPage==pages?'!cursor-not-allowed !bg-gray-100':''} flex w-8 h-8 justify-center cursor-pointer  items-center rounded-full  bg-gray-200`}
+            <button disabled={currentPage==pages} onClick={()=>handleNextPage(currentPage)} class={cn(currentPage==pages&&'!cursor-not-allowed !bg-gray-100', 'flex w-8 h-8 justify-center cursor-pointer  items-center rounded-full  bg-gray-200')}
                 title="Next Page">
                 <span class="sr-only">Next Page</span>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"

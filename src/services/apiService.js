@@ -7,7 +7,7 @@ export const createApi = (url, data) => {
     .post(url,data)
     .then((response) => response.data)
     .catch((e) => {
-      console.log("error", e);
+      console.error(e);
       throw e;
     });
 };
@@ -17,7 +17,7 @@ export const getApi = (url) => {
     .get(url)
     .then((response) => response.data)
     .catch((e) => {
-      console.log("error", e);
+      console.error(e);
       throw e;
     });
 };
@@ -27,7 +27,7 @@ export const deleteApi = (url) => {
     .delete(url)
     .then((response) => response.data)
     .catch((e) => {
-      console.log("error", e);
+      console.error(e);
       throw e;
     });
 };
@@ -37,7 +37,7 @@ export const updateApi = (url,data) => {
     .get(url,data)
     .then((response) => response.data)
     .catch((e) => {
-      console.log("error", e);
+      console.error( e);
       throw e;
     });
 };

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
+import { cn } from "../../utils/utils";
 
 function Modal({ isModal, type,title ,children,submitProduct,setIsModal }) {
   const [show, setShow] = useState(false);
@@ -23,12 +24,12 @@ function Modal({ isModal, type,title ,children,submitProduct,setIsModal }) {
   return (
     <div className="fixed inset-0 bg-black/20 z-50 flex items-center justify-center">
       <div
-        className={`bg-white m-8 rounded-lg shadow-lg w-full max-w-md p-4 relative
-        ${
+        className={cn('bg-white m-8 rounded-lg shadow-lg w-full max-w-md p-4 relative',
+        
           closing
             ? "animate-[popupClose_0.3s_ease-in]"
             : "animate-[popupOpen_0.3s_ease-out]"
-        }`}
+  )}
       >
         <form onSubmit={(e) => submitProduct(e)}>
           <div className="flex justify-between items-center mb-3">

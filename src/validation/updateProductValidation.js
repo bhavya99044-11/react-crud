@@ -1,4 +1,4 @@
-const required ='This field is required.';
+import { priceNumber, required } from "../utils/constants/validationMessages";
 
 export const updateProductValidation = (data) => {
     const stat = data ?? {}
@@ -10,7 +10,7 @@ export const updateProductValidation = (data) => {
       if ('price' in data && ( data?.price === "" || data?.price === "" )) {
         errors.price = required;
       }else if('price' in data && (Number.isNaN(Number(data.price)) )){
-        errors.price = 'Price must be a number.'
+        errors.price = priceNumber
       }      
       return errors;
     }else{

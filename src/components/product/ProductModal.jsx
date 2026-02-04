@@ -18,15 +18,17 @@ function ProductModal({
   const [buttonDisabled, setButtonDisabled] = useState(false);
 
   function changeCreateForm(e) {
-    e.target.value = capitalInput(e.target.value);
+    let value=e.target.value
+    let name = e.target.name
+    value = capitalInput(value);
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value.trim(),
+      [name]:value.trim(),
     }));
-    if (e.target.value != "") {
+    if (value != "") {
       setFormData((prev) => {
         const errors = addProductValidation({
-          [e.target.name]: e.target.value,
+          [name]: value,
         });
         if (Object.keys(errors).length > 0) {
           const [key, value] = Object.entries(errors)[0];
@@ -38,7 +40,7 @@ function ProductModal({
         } else {
           setError((prev) => ({
             ...prev,
-            [e.target.name]: "",
+            [name]: "",
           }));
         }
         return prev;
@@ -47,23 +49,20 @@ function ProductModal({
   }
 
   function changeUpdateForm(e) {
-    e.target.value = capitalInput(e.target.value);
-    if (initialData[e.target.name] != e.target.value) {
-      setButtonDisabled(false);
-    } else {
-      setButtonDisabled(true);
-    }
-
+    let name = e.target.name;
+    let value =e.target.value;
+    value = capitalInput(value);
+    setButtonDisabled(!(initialData[name] != value));
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value.trim(),
+      [name]: value.trim(),
     }));
 
     
-    if (e.target.value != "") {
+    if (value != "") {
       setFormData((prev) => {
         const errors = updateProductValidation({
-          [e.target.name]: e.target.value,
+          [name]: value,
         });
         if (Object.keys(errors).length > 0) {
           const [key, value] = Object.entries(errors)[0];
@@ -74,7 +73,7 @@ function ProductModal({
         } else {
           setError((prev) => ({
             ...prev,
-            [e.target.name]: "",
+            [name]: "",
           }));
         }
         return prev;
@@ -86,6 +85,8 @@ function ProductModal({
     if (type != "isCreate") {
       setButtonDisabled(true);
       setFormData(data);
+    }else{
+      setFormData({})
     }
     setInitialData(data);
     setError({});
@@ -104,7 +105,7 @@ function ProductModal({
       await submitProduct(formData);
       e.target.reset();
     } catch (e) {
-      console.log(e);
+      console.error(e);
     } finally {
       setIsLoading(false);
     }
@@ -122,7 +123,7 @@ function ProductModal({
     try {
       await submitProduct(e, formData);
     } catch (e) {
-      console.log(e);
+      console.error(e);
     } finally {
       setIsLoading(false);
     }

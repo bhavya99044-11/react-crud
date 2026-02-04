@@ -9,7 +9,7 @@ const DeleteModal = ({ setIsDelete,title ,isDelete, deleteProduct }) => {
     try {
       await deleteProduct();
     } catch (e) {
-      console.log(e);
+      console.error(e);
     } finally {
       setIsLoading(false);
     }
